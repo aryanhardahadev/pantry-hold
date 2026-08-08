@@ -8,7 +8,7 @@ services:
     buildFromGit: https://github.com/aryanhardahadev/pantry-hold
     zeropsSetup: app
     enableSubdomainAccess: true
-    priority: 2
+    priority: 1
     minContainers: 1
     maxContainers: 1
     verticalAutoscaling:
@@ -26,7 +26,7 @@ services:
     buildFromGit: https://github.com/aryanhardahadev/pantry-hold
     zeropsSetup: worker
     enableSubdomainAccess: false
-    priority: 2
+    priority: 1
     minContainers: 1
     maxContainers: 1
     verticalAutoscaling:
@@ -41,7 +41,7 @@ services:
   - hostname: db
     type: postgresql:single@18
     enableSubdomainAccess: false
-    priority: 1
+    priority: 3
     verticalAutoscaling:
       cpuMode: SHARED
       minCpu: 1

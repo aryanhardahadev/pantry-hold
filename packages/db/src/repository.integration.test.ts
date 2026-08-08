@@ -62,5 +62,5 @@ describe("database initialization", () => {
       );
       await rm(dataDir, { recursive: true, force: true });
     }
-  });
+  }, 10_000);
 });

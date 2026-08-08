@@ -47,9 +47,12 @@ export function validateZeropsConfig(source) {
     const block = blocks.find((candidate) => candidate.setup === setup)?.text;
     if (!block) continue;
 
-    const node22Count = block.match(/^ {6}base: nodejs@22\s*$/gm)?.length ?? 0;
+    const node22Count =
+      block.match(/^ {6}base: alpine\/nodejs@22\s*$/gm)?.length ?? 0;
     if (node22Count !== 2) {
-      errors.push(`${setup} must pin both build and runtime to nodejs@22`);
+      errors.push(
+        `${setup} must pin both build and runtime to schema-valid alpine/nodejs@22`,
+      );
     }
 
     requirePattern(
@@ -94,7 +97,7 @@ export function validateZeropsConfig(source) {
   requirePattern(
     errors,
     app,
-    /^ {8}- port: 3000\n {10}protocol: TCP\n {10}httpSupport: true$/m,
+    /^ {8}- port: 3000\n(?: {10}protocol: tcp\n)? {10}httpSupport: true$/m,
     "app must expose HTTP port 3000 for public access",
   );
   requirePattern(
@@ -126,7 +129,7 @@ export function validateZeropsConfig(source) {
   requirePattern(
     errors,
     worker,
-    /^ {8}- port: 3001\n {10}protocol: TCP\n {10}httpSupport: true$/m,
+    /^ {8}- port: 3001\n(?: {10}protocol: tcp\n)? {10}httpSupport: true$/m,
     "worker must declare its internal HTTP health port 3001",
   );
   requirePattern(
@@ -257,7 +260,25 @@ export function validateZeropsImportConfig(source) {
   }
   requireFixedMinimumResources(errors, db, "db");
 
+  const appPriority = importPriority(app);
+  const workerPriority = importPriority(worker);
+  const dbPriority = importPriority(db);
+  if (
+    appPriority === null ||
+    workerPriority === null ||
+    dbPriority === null ||
+    dbPriority <= appPriority ||
+    dbPriority <= workerPriority
+  ) {
+    errors.push("db import priority must exceed app and worker priorities");
+  }
+
   return errors;
+}
+
+function importPriority(block) {
+  const value = block.match(/^ {4}priority: (\d+)\s*$/m)?.[1];
+  return value === undefined ? null : Number(value);
 }
 
 function requireFixedMinimumResources(errors, block, hostname) {
