@@ -1,0 +1,35 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local state
+*.log
+*.pid
+*.sqlite
+*.sqlite3
+*.db
+.DS_Store
+Thumbs.db
+
+# IDE and agent-local files
+.idea/
+.vscode/
+.codex/
+.agents/
+
+# Research downloads and generated media
+artifacts/
+
+# Zerops/local tooling
+.zerops/
