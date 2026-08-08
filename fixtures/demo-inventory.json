@@ -1,0 +1,71 @@
+[
+  {
+    "id": "inventory-moringa-match",
+    "name": "Organic Moringa Powder",
+    "shelf": "Bulk ingredients / B-04",
+    "quantity": 6,
+    "unit": "bags",
+    "estimatedMealPortions": 180,
+    "identifiers": [
+      {
+        "type": "product_code",
+        "value": "GJ96",
+        "displayValue": "GJ96",
+        "evidence": "Pantry intake label"
+      },
+      {
+        "type": "lot",
+        "value": "25/08001",
+        "displayValue": "25/08001",
+        "evidence": "Pantry intake label"
+      }
+    ],
+    "demoData": true
+  },
+  {
+    "id": "inventory-moringa-similar-name",
+    "name": "Organic Moringa Powder",
+    "shelf": "Bulk ingredients / B-05",
+    "quantity": 4,
+    "unit": "bags",
+    "estimatedMealPortions": 120,
+    "identifiers": [
+      {
+        "type": "product_code",
+        "value": "GJ97",
+        "displayValue": "GJ97",
+        "evidence": "Pantry intake label"
+      },
+      {
+        "type": "lot",
+        "value": "25/08002",
+        "displayValue": "25/08002",
+        "evidence": "Pantry intake label"
+      }
+    ],
+    "demoData": true
+  },
+  {
+    "id": "inventory-rice",
+    "name": "Long-grain rice",
+    "shelf": "Dry goods / A-01",
+    "quantity": 12,
+    "unit": "bags",
+    "estimatedMealPortions": 240,
+    "identifiers": [
+      {
+        "type": "product_code",
+        "value": "RICE-440",
+        "displayValue": "RICE-440",
+        "evidence": "Pantry intake label"
+      },
+      {
+        "type": "lot",
+        "value": "2026-07-A",
+        "displayValue": "2026-07-A",
+        "evidence": "Pantry intake label"
+      }
+    ],
+    "demoData": true
+  }
+]

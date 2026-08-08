@@ -33,7 +33,9 @@ lines.on("line", (line) => {
 
     const buckets = Object.values(
       payload?.rateLimitsByLimitId ??
-        (payload?.rateLimits ? { [payload.rateLimits.limitId]: payload.rateLimits } : {}),
+        (payload?.rateLimits
+          ? { [payload.rateLimits.limitId]: payload.rateLimits }
+          : {}),
     );
     const highestUsedPercent = Math.max(
       0,

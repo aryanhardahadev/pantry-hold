@@ -1,0 +1,33 @@
+{
+  "fixtureMetadata": {
+    "source": "openFDA food enforcement API",
+    "sourceUrl": "https://api.fda.gov/food/enforcement.json?search=recall_number:%22H-1180-2026%22&limit=1",
+    "fetchedAt": "2026-08-08T19:22:00.000Z",
+    "usage": "Cached official record for deterministic demo and outage fallback"
+  },
+  "record": {
+    "status": "Ongoing",
+    "city": "Cerritos",
+    "state": "CA",
+    "country": "United States",
+    "classification": "Class I",
+    "openfda": {},
+    "product_type": "Food",
+    "event_id": "99387",
+    "recalling_firm": "Green Jeeva LLC",
+    "address_1": "16200 Carmenita Rd Ste A",
+    "address_2": "N/A",
+    "postal_code": "90703-2255",
+    "voluntary_mandated": "Voluntary: Firm initiated",
+    "initial_firm_notification": "E-Mail",
+    "distribution_pattern": "Product was distributed to 4 different consignees who have used the ingredient for further processing and distribution.",
+    "recall_number": "H-1180-2026",
+    "product_description": "Organic Moringa Powder; 15kg/bag (bulk); Product code: GJ96",
+    "product_quantity": "2,490 kg",
+    "reason_for_recall": "Moringa Powder ingredient positive for salmonella",
+    "recall_initiation_date": "20260708",
+    "center_classification_date": "20260721",
+    "report_date": "20260729",
+    "code_info": "lot: 25/08001 Expiration date: 02-11-2028"
+  }
+}

@@ -96,13 +96,13 @@ The recommendation is not approved yet. It should be overturned if the user has 
 
 Scores are 1–5. Weighted total is out of 100: originality 20%, usefulness 20%, technical depth 15%, Zerops fit 20%, demo strength 15%, time feasibility 10%.
 
-| Candidate | Original | Useful | Depth | Zerops fit | Demo | Feasible | Weighted |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **RetryRail — webhook reliability gateway + failure lab** | 4 | 5 | 5 | 5 | 5 | 4 | **94** |
-| **ShipProof — deployment evidence passport and release gate** | 4 | 4 | 4 | 5 | 4 | 4 | **84** |
-| **Incident Atlas — live incident room, timeline, and public status engine** | 3 | 4 | 5 | 5 | 5 | 2 | **82** |
-| **Lineage Lab — replayable data-transformation pipeline with provenance graph** | 4 | 4 | 5 | 5 | 3 | 3 | **82** |
-| **Blueprint Doctor — Zerops config analyser, cost guard, and architecture visualiser** | 2 | 4 | 4 | 5 | 4 | 4 | **76** |
+| Candidate                                                                              | Original | Useful | Depth | Zerops fit | Demo | Feasible | Weighted |
+| -------------------------------------------------------------------------------------- | -------: | -----: | ----: | ---------: | ---: | -------: | -------: |
+| **RetryRail — webhook reliability gateway + failure lab**                              |        4 |      5 |     5 |          5 |    5 |        4 |   **94** |
+| **ShipProof — deployment evidence passport and release gate**                          |        4 |      4 |     4 |          5 |    4 |        4 |   **84** |
+| **Incident Atlas — live incident room, timeline, and public status engine**            |        3 |      4 |     5 |          5 |    5 |        2 |   **82** |
+| **Lineage Lab — replayable data-transformation pipeline with provenance graph**        |        4 |      4 |     5 |          5 |    3 |        3 |   **82** |
+| **Blueprint Doctor — Zerops config analyser, cost guard, and architecture visualiser** |        2 |      4 |     4 |          5 |    4 |        4 |   **76** |
 
 ## Adversarial review: why each idea could lose
 
@@ -180,12 +180,12 @@ web (static React/Vite) ---> api (Node/TypeScript, public ingest + SSE)
 
 ### Minimal data model
 
-| Table | Essential fields | Purpose |
-| --- | --- | --- |
-| `endpoints` | `id`, `name`, `ingest_token_hash`, `target_url`, `secret`, `max_attempts` | Routing and delivery policy |
-| `events` | `id`, `endpoint_id`, `event_key`, `headers_json`, `payload_json`, `received_at` | Durable received event |
-| `deliveries` | `id`, `event_id`, `status`, `attempt_count`, `next_attempt_at`, `locked_at` | Queue and lifecycle state |
-| `delivery_attempts` | `id`, `delivery_id`, `attempt_no`, `status_code`, `latency_ms`, `error`, `created_at` | Explainable evidence trail |
+| Table               | Essential fields                                                                      | Purpose                     |
+| ------------------- | ------------------------------------------------------------------------------------- | --------------------------- |
+| `endpoints`         | `id`, `name`, `ingest_token_hash`, `target_url`, `secret`, `max_attempts`             | Routing and delivery policy |
+| `events`            | `id`, `endpoint_id`, `event_key`, `headers_json`, `payload_json`, `received_at`       | Durable received event      |
+| `deliveries`        | `id`, `event_id`, `status`, `attempt_count`, `next_attempt_at`, `locked_at`           | Queue and lifecycle state   |
+| `delivery_attempts` | `id`, `delivery_id`, `attempt_no`, `status_code`, `latency_ms`, `error`, `created_at` | Explainable evidence trail  |
 
 Use a database transaction and row locking (`FOR UPDATE SKIP LOCKED`) for a simple durable worker queue. Do not add NATS/Valkey until a real need appears; service-count theatre is not architecture.
 
@@ -208,14 +208,14 @@ Use a database transaction and row locking (`FOR UPDATE SKIP LOCKED`) for a simp
 
 ### Technical risks and mitigations
 
-| Risk | Mitigation | Stop condition |
-| --- | --- | --- |
-| Retry scheduler races or double claims | PostgreSQL transaction + `SKIP LOCKED`; one worker container for MVP | Fall back to a single polling worker with locked rows |
-| SSRF through arbitrary target URLs | MVP allowlist/demo mode; block loopback/link-local/metadata ranges; document limitation | Do not expose unrestricted target creation publicly |
-| Secrets/personal data in stored payloads | Payload size cap, header allowlist/redaction, short retention | Disable raw payload display if safe handling is incomplete |
-| Live UI consumes too much time | Poll every 2 seconds first; add SSE only after the loop works | No SSE until deployed core is stable |
-| Resource credit burn | Shared CPU, narrow max RAM/disk, one container, no HA/observability add-ons | Do not import until maximum cost is reviewed and approved |
-| Flaky demo target | Built-in deterministic receiver and seed/reset command | Never depend on an external SaaS for the recorded demo |
+| Risk                                     | Mitigation                                                                              | Stop condition                                             |
+| ---------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Retry scheduler races or double claims   | PostgreSQL transaction + `SKIP LOCKED`; one worker container for MVP                    | Fall back to a single polling worker with locked rows      |
+| SSRF through arbitrary target URLs       | MVP allowlist/demo mode; block loopback/link-local/metadata ranges; document limitation | Do not expose unrestricted target creation publicly        |
+| Secrets/personal data in stored payloads | Payload size cap, header allowlist/redaction, short retention                           | Disable raw payload display if safe handling is incomplete |
+| Live UI consumes too much time           | Poll every 2 seconds first; add SSE only after the loop works                           | No SSE until deployed core is stable                       |
+| Resource credit burn                     | Shared CPU, narrow max RAM/disk, one container, no HA/observability add-ons             | Do not import until maximum cost is reviewed and approved  |
+| Flaky demo target                        | Built-in deterministic receiver and seed/reset command                                  | Never depend on an external SaaS for the recorded demo     |
 
 ## Recommendation for planning
 

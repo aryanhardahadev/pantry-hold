@@ -29,13 +29,13 @@ Pantry Hold is selected after a final three-way jury. Local Git is initialized o
 
 ## Verification evidence
 
-| Check | Method | Result |
-| --- | --- | --- |
-| Git identity | GitHub plugin profile | `aryanhardahadev`, Aryan Hardaha |
-| Codex quota | `node scripts/check-codex-usage.mjs` | 31% used before implementation |
-| openFDA source | Direct official API request | Current recall `H-1180-2026` contains product code `GJ96` and lot `25/08001` |
-| Local toolchain | version checks | Node 22 and npm 11 available; Docker/PostgreSQL/NATS unavailable |
-| Zerops state | prior signed-in read-only audit | No application services; ZCP disabled |
+| Check           | Method                               | Result                                                                       |
+| --------------- | ------------------------------------ | ---------------------------------------------------------------------------- |
+| Git identity    | GitHub plugin profile                | `aryanhardahadev`, Aryan Hardaha                                             |
+| Codex quota     | `node scripts/check-codex-usage.mjs` | 31% used before implementation                                               |
+| openFDA source  | Direct official API request          | Current recall `H-1180-2026` contains product code `GJ96` and lot `25/08001` |
+| Local toolchain | version checks                       | Node 22 and npm 11 available; Docker/PostgreSQL/NATS unavailable             |
+| Zerops state    | prior signed-in read-only audit      | No application services; ZCP disabled                                        |
 
 ## Risks and blockers
 
