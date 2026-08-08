@@ -48,6 +48,20 @@ describe("delivery contract", () => {
     );
   });
 
+  it("rejects optional timing overrides before schema or decoder drift", () => {
+    const numericDurations = zeropsSource.replaceAll(
+      "          path: /healthz",
+      "          path: /healthz\n        failureTimeout: 60\n        disconnectTimeout: 30\n        recoveryTimeout: 30\n        execPeriod: 10",
+    );
+
+    expect(validateZeropsConfig(numericDurations)).toEqual(
+      expect.arrayContaining([
+        "app must omit optional check timings and use platform defaults",
+        "worker must omit optional check timings and use platform defaults",
+      ]),
+    );
+  });
+
   it("rejects legacy runtime schema values and dependent-first imports", () => {
     const legacyRuntime = zeropsSource
       .replaceAll("base: alpine/nodejs@22", "base: nodejs@22")

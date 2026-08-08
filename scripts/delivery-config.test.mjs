@@ -33,6 +33,25 @@ test("validator rejects missing worker health and a literal database credential"
   assert.ok(errors.some((error) => error.includes("worker runtime health")));
 });
 
+test("validator rejects optional health timing overrides", () => {
+  const invalid = zeropsSource.replaceAll(
+    "          path: /healthz",
+    "          path: /healthz\n        failureTimeout: 60\n        disconnectTimeout: 30\n        recoveryTimeout: 30\n        execPeriod: 10",
+  );
+
+  const errors = validateZeropsConfig(invalid);
+  assert.ok(
+    errors.includes(
+      "app must omit optional check timings and use platform defaults",
+    ),
+  );
+  assert.ok(
+    errors.includes(
+      "worker must omit optional check timings and use platform defaults",
+    ),
+  );
+});
+
 test("Zerops import pins the approved private, minimum-resource topology", () => {
   assert.deepEqual(validateZeropsImportConfig(zeropsImportSource), []);
 });

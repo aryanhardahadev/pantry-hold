@@ -91,6 +91,15 @@ export function validateZeropsConfig(source) {
       /^ {6}healthCheck:/m,
       `${setup} must define a runtime health check`,
     );
+    if (
+      /^ {8}(?:failureTimeout|disconnectTimeout|recoveryTimeout|execPeriod|retryPeriod):/m.test(
+        block,
+      )
+    ) {
+      errors.push(
+        `${setup} must omit optional check timings and use platform defaults`,
+      );
+    }
   }
 
   const app = blocks.find(({ setup }) => setup === "app")?.text ?? "";

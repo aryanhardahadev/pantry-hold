@@ -33,10 +33,6 @@ zerops:
         httpGet:
           port: 3000
           path: /healthz
-        failureTimeout: 60
-        disconnectTimeout: 30
-        recoveryTimeout: 30
-        execPeriod: 10
 
   - setup: worker
     build:
@@ -70,7 +66,3 @@ zerops:
         httpGet:
           port: 3001
           path: /healthz
-        failureTimeout: 60
-        disconnectTimeout: 30
-        recoveryTimeout: 30
-        execPeriod: 10
