@@ -1,43 +1,49 @@
 # Handoff: Winning Zerops Hackathon Project
 
-Status: Awaiting research review
-Owner: Orchestrator
-Last updated: 2026-08-08
+Status: Pantry Hold selected; foundation next
+Owner: Main task
+Last updated: 2026-08-09
 
 ## Current state
 
-The repository contains only durable planning artifacts. Primary-source research is complete enough for discussion. RetryRail, a webhook reliability gateway and failure lab, is the provisional leader, but no project idea, stack, service, repository connection, purchase, or deployment has been committed.
+Pantry Hold is selected after a final three-way jury. Local Git is initialized on `main` with small checkpoint commits under `Aryan Hardaha <aryanhardaha.dev@gmail.com>`. The GitHub plugin is authenticated as `aryanhardahadev`; the `gh` CLI keyring token is stale. No Zerops application service exists yet.
 
 ## Completed
 
-- START artifacts created under `docs/tasks/winning-zerops-project/`.
-- RESEARCH synthesized into `research.md`, including verified rules/platform constraints, a five-idea weighted matrix, adversarial reviews, and a provisional MVP architecture.
-- AI-assistance disclosure initialized in `ai-usage.md`.
+- Official event/rules/resources/submission and full livestream audited.
+- Overnight research retired RetryRail and ColdChain, compared RecallReady/Pantry Hold/Breakwater, and selected Pantry Hold.
+- Official openFDA endpoint and current exact identifier fields verified.
+- Official Codex quota guard added; last check before implementation showed 31% used.
+- User authorized local Git, incremental commits, GitHub Actions, and promo-balance Zerops deployment after a forecast.
 
 ## In progress
 
-- Human review: confirm available build hours, preferred stack, and whether RetryRail should advance to PLAN.
+- Create and commit the shared TypeScript/API/data foundation, then dispatch non-overlapping implementation tasks.
 
 ## Decisions and deviations
 
-- Implementation and Zerops mutations remain gated behind research review and explicit approval.
-- The stricter written rules govern even though the current submission form omits dedicated demo-video, Zerops-explanation, and AI-disclosure fields.
+- Direct team orchestration is being used; the planning artifacts are an audit trail, not a workflow gate.
+- Autonomous implementation is authorized. Zerops provisioning remains gated by a cost forecast and the existing promo balance.
+- Matches are deterministic typed-identifier intersections. Fuzzy name similarity is prohibited.
+- The stricter written submission rules govern despite livestream/form ambiguity.
 
 ## Verification evidence
 
-| Check | Command or method | Result |
+| Check | Method | Result |
 | --- | --- | --- |
-| Workspace inspection | `rg --files` | Workspace was empty before task artifacts were added. |
-| Official event review | Authenticated Chrome tabs and public official pages | Rules, resources, overview, and current submission form inspected. |
-| Registration check | Gmail search/read, no mailbox mutation | WeMakeDevs registration confirmation found. |
-| Zerops state check | Signed-in project page, read-only | No application services; ZCP not enabled; zero egress shown. |
+| Git identity | GitHub plugin profile | `aryanhardahadev`, Aryan Hardaha |
+| Codex quota | `node scripts/check-codex-usage.mjs` | 31% used before implementation |
+| openFDA source | Direct official API request | Current recall `H-1180-2026` contains product code `GJ96` and lot `25/08001` |
+| Local toolchain | version checks | Node 22 and npm 11 available; Docker/PostgreSQL/NATS unavailable |
+| Zerops state | prior signed-in read-only audit | No application services; ZCP disabled |
 
 ## Risks and blockers
 
-- Exact clock-time cutoff remains unpublished in the inspected sources; re-check after the kickoff.
-- Build-hour availability and strongest implementation stack are unknown and may change the recommendation.
-- Application services consume metered resources; review a hard resource envelope and cost estimate before any import.
+- `gh` CLI authentication is stale; use the authenticated GitHub plugin or reauthenticate later before push.
+- No local Docker/PostgreSQL is installed; use PGlite for local SQL integration and verify actual PostgreSQL after approved provisioning.
+- openFDA warns against public-alert/lifecycle use; keep Pantry Hold an internal fictional-inventory triage demo and link official sources.
+- Exact cutoff remains informal; target a deployed stable MVP well before Sunday night IST.
 
 ## Exact next action
 
-Aryan reviews `research.md` and answers the two scope-changing questions (focused hours and fastest comfortable stack). If RetryRail is accepted, write `plan.md`; do not implement or create services before approval.
+Build and verify the Pantry Hold foundation, run the usage guard, then dispatch backend, frontend, and delivery branches from the same committed contract.

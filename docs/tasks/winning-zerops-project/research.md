@@ -1,8 +1,22 @@
 # Research: Winning Zerops Hackathon Project
 
-Status: Ready for human review
+Status: Superseded findings preserved; 2026-08-09 decision is current
 Owner: Research phase owner
-Last reviewed by Aryan: Not yet
+Last reviewed by Aryan: Autonomous overnight research authorized
+
+## 2026-08-09 decision update
+
+The earlier RetryRail recommendation below is historical and no longer current. RetryRail was retired after the prior WeMakeDevs gallery showed heavy retry/self-healing overlap. Generic ColdChain Witness was then rejected because it depends on simulated hardware and overlaps mature cold-chain monitoring products.
+
+Three independent final juries compared RecallReady, Pantry Hold, and Breakwater. The judge-fit jury selected **Pantry Hold** because it best combines three-second clarity, a concrete user, real public data, a strong action-oriented UI, meaningful app/worker/database services, and Sunday-night feasibility. The implementation jury preferred Breakwater, while the data jury preferred RecallReady; their strongest lessons were incorporated as strict deterministic matching, source preservation, and a real worker path.
+
+Verified source path: the official openFDA food-enforcement API is reachable without credentials and exposes `recall_number`, `product_description`, `code_info`, `classification`, `status`, `distribution_pattern`, and `report_date`. A current record, `H-1180-2026`, contains product code `GJ96` and lot `25/08001`, so the MVP can demonstrate exact typed-identifier matching without fuzzy product-name inference. The API is updated weekly and warns against using its data to issue public alerts or track recall lifecycles; Pantry Hold is therefore an internal fictional-inventory triage demo that links to official records and says only “possible match.”
+
+Primary sources: [openFDA food enforcement](https://open.fda.gov/apis/food/enforcement/), [endpoint usage](https://open.fda.gov/apis/food/enforcement/how-to-use-the-endpoint/), [searchable fields](https://open.fda.gov/apis/food/enforcement/searchable-fields/).
+
+Selected architecture: public Node web/API service, private Node sync/matching worker, and private single-node PostgreSQL on Zerops. No NATS, ZCP, authentication, external messaging, custom domain, HA, dedicated IP, or advanced observability in the MVP.
+
+Kill condition: if official record -> normalized identifiers -> exact inventory match -> hold action is not working through the real worker within the initial implementation spike, switch to the already-scoped Breakwater fallback rather than faking matches.
 
 ## Questions
 

@@ -1,8 +1,16 @@
 # Brief: Winning Zerops Hackathon Project
 
-Status: Draft — research ready for review
+Status: Approved for autonomous implementation
 Owner: Orchestrator
-Last updated: 2026-08-08
+Last updated: 2026-08-09
+
+## Selected product
+
+**Pantry Hold** is an internal recall-triage board for a small food pantry. A private worker reads official openFDA food-enforcement records, extracts explicitly labelled product identifiers, and compares them with a clearly fictional demo inventory. The public app presents only deterministic possible matches, the evidence for each match, and a human hold/review workflow.
+
+Core promise: **An official recall may match items in this pantry; show exactly why, place them on hold, and open the source record.**
+
+Pantry Hold must never claim that a product is unsafe, issue a public alert, infer a match from fuzzy product names, or represent the demo inventory as real.
 
 ## Problem and value
 
@@ -17,10 +25,10 @@ A research-backed project decision with a tightly scoped MVP, clear judge-facing
 - [ ] Verify current hackathon requirements and relevant Zerops platform constraints using primary sources where possible.
 - [ ] Compare 3–5 feasible ideas on originality, usefulness, technical depth, Zerops fit, demo strength, time risk, and judging potential.
 - [ ] Stress-test every candidate with concrete failure modes and reasons a judge might dismiss it.
-- [ ] Recommend one idea and explain what evidence or user decision could overturn that recommendation.
+- [x] Recommend one idea and explain what evidence or user decision could overturn that recommendation.
 - [ ] Define the selected MVP, non-goals, architecture, services, data model, deployment approach, verification, and demo flow.
 - [ ] Keep all paid purchases and paid-service enablement behind explicit user approval.
-- [ ] Maintain an AI-usage disclosure log from the beginning of implementation.
+- [x] Maintain an AI-usage disclosure log from the beginning of implementation.
 
 ## Constraints
 
@@ -30,12 +38,14 @@ A research-backed project decision with a tightly scoped MVP, clear judge-facing
 - Submission must include an accessible source repository, live URL, demo video, Zerops explanation, and public build post tagging @WeMakeDevs and @zeropsio.
 - AI tools are allowed but must be disclosed; original work and technical understanding must be evident.
 - Current Zerops project is in EU Central (prg1), uses a Lightweight 30-day plan, has Z15.00 promotional credit, and has ZCP disabled.
-- Do not purchase a plan, enable paid services, or make deployment mutations without explicit approval.
+- Zerops deployment is authorized against the existing Z15 promo balance after a cost forecast. Do not purchase a plan or enable ZCP, HA, dedicated IP, or add-ons.
+- Stop all agents when an official Codex quota bucket reaches 99% used.
 - Time remaining is the dominant project-management constraint; the MVP must be demoable before optional polish.
 
 ## Non-goals
 
-- Implementing or deploying before research and plan review.
+- Fuzzy recall-to-inventory matching or claims derived from product-name similarity.
+- Public safety alerts, food-safety determinations, compliance certification, or advice to consumers.
 - Building a generic CRUD dashboard, generic chatbot, or thin third-party API wrapper without a distinctive technical mechanism.
 - Depending on hardware, proprietary datasets, manual moderation, or external approvals that cannot be guaranteed during the event.
 - Designing an MVP whose core demo requires paid infrastructure.
