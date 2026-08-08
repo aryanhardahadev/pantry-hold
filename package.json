@@ -12,7 +12,7 @@
     "build:server": "tsc -p tsconfig.server.json",
     "dev": "concurrently -k -n web,services \"npm:dev:web\" \"npm:dev:services\"",
     "dev:web": "vite",
-    "dev:services": "node --env-file-if-exists=.env --import tsx --watch apps/dev/src/index.ts",
+    "dev:services": "node --env-file-if-exists=.env --import tsx apps/dev/src/index.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",

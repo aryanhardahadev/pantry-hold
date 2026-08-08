@@ -23,6 +23,9 @@ const appSource = await readFile(
   new URL("./src/App.tsx", import.meta.url),
   "utf8",
 );
+const packageJson = JSON.parse(
+  await readFile(new URL("../../package.json", import.meta.url), "utf8"),
+);
 
 describe("delivery contract", () => {
   it("keeps the Zerops topology deterministic and secret-free", () => {
@@ -43,5 +46,16 @@ describe("delivery contract", () => {
     expect(appSource).toMatch(/fictional pantry/i);
     expect(appSource).toMatch(/exact product code and lot/i);
     expect(appSource).toMatch(/not comprehensive recall coverage/i);
+  });
+
+  it("keeps persistent local services outside watch mode", () => {
+    expect(packageJson.scripts.dev).toContain("npm:dev:web");
+    expect(packageJson.scripts["dev:web"]).toBe("vite");
+    expect(packageJson.scripts["dev:services"]).toContain(
+      "apps/dev/src/index.ts",
+    );
+    expect(packageJson.scripts["dev:services"]).not.toMatch(
+      /--watch(?:\s|=|$)/,
+    );
   });
 });
