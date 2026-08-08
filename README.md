@@ -2,6 +2,8 @@
 
 > **One fictional community-meal pantry item shares an exact product code and lot with an official record. Review the evidence, record a hold workflow action, and open the source.**
 
+![Pantry Hold dashboard showing exact product-code and lot evidence for a fictional pantry item](./docs/assets/pantry-hold-dashboard.png)
+
 Pantry Hold is a recall-triage board for a **fictional demo pantry** serving community meals with bulk-preparation supplies. A private worker reads official openFDA food-enforcement data (or the bundled cached copy of an official openFDA response), extracts explicitly labelled identifiers, and compares them with fictional inventory. It reports only deterministic **possible matches** for human review; the demo checks one official record to prove the full pipeline and is not comprehensive recall coverage.
 
 | 3-second value                            | Proof, not prediction                              | Human action                                                        |
@@ -35,24 +37,24 @@ The UI only renders persisted results. The private worker owns source ingestion,
 
 ## Why Zerops is part of the product
 
-- `app` is the only public runtime. It serves the UI/API on port `3000` with readiness and continuous health checks.
+- [`app`](https://app-2b48-3000.prg1.zerops.app/) is the only public runtime. It serves the no-login UI/API on port `3000` with readiness and continuous health checks.
 - `worker` stays private and performs source sync and matching away from the request path. Its internal port `3001` is used only for `/readyz` and `/healthz` container probes; the import manifest explicitly disables subdomain access.
 - `db` is a private, single-container PostgreSQL service. Both runtimes receive `DATABASE_URL` through the Zerops-generated `${db_connectionString}` reference; no credential is committed.
-- [`zerops.yaml`](./zerops.yaml) pins both runtimes to Node.js 22 and defines reproducible build/run pipelines. [`zerops-import.yaml`](./zerops-import.yaml) is a services-only manifest for the existing Lightweight project; it declares the reviewed, non-HA three-service topology but does not provision it.
+- [`zerops.yaml`](./zerops.yaml) pins both runtimes to Node.js 22 and defines reproducible build/run pipelines. [`zerops-import.yaml`](./zerops-import.yaml) was imported into the existing Lightweight project to provision exactly the reviewed, non-HA three-service topology.
 - [The config validator](./scripts/validate-config.mjs) fails if the worker becomes public, the database reference is replaced, checks disappear, or literal secrets are added.
 
-### Proposed resource envelope and cost guard
+![Private Zerops worker logs showing a live openFDA sync, one created match, and successful readiness](./docs/assets/zerops-worker-proof.png)
 
-This is a demo-sized forecast to review in the Zerops calculator **before provisioning**. It is not an auto-deploy plan.
+### Deployed resource envelope and observed cost
 
-| Service     | Visibility | Proposed cap                                               | Approx. 30-day ceiling* |
-| ----------- | ---------- | ---------------------------------------------------------- | ----------------------: |
-| `app`       | Public     | 1 shared CPU, 0.25 GB RAM, 1 GB disk, 1 container          |                   $1.45 |
-| `worker`    | Private    | 1 shared CPU, 0.25 GB RAM, 1 GB disk, 1 container          |                   $1.45 |
-| `db`        | Private    | PostgreSQL 18 single, 1 shared CPU, 0.25 GB RAM, 1 GB disk |                   $1.45 |
-| **Maximum** |            | No HA, add-ons, dedicated IP, or advanced observability    |     **$4.35 / 30 days** |
+| Service      | Visibility | Active allocation                                         | 30-day dashboard rate |
+| ------------ | ---------- | --------------------------------------------------------- | --------------------: |
+| `app`        | Public     | 1 shared CPU, 0.25 GB RAM, 1 GB disk, 1 container         |                 $1.45 |
+| `worker`     | Private    | 1 shared CPU, 0.25 GB RAM, 1 GB disk, 1 container         |                 $1.45 |
+| `db`         | Private    | PostgreSQL 18 single, 1 shared CPU, 0.5 GB RAM, 1 GB disk |                 $2.20 |
+| **Observed** |            | No HA, add-ons, public IPv4, or advanced observability    |   **$5.10 / 30 days** |
 
-\*Estimate based on published rates of $0.60/shared CPU, $0.75/0.25 GB RAM, and $0.10/1 GB disk per 30 days. The fixed values use the current official minimum of 1 CPU and the PostgreSQL minimums of 0.25 GB RAM and 1 GB disk. Confirm the live calculator values and the existing promo balance before creating services. A Zerops daily spending limit is an alert, not a hard stop.
+The pre-import forecast was `$4.35 / 30 days`; Zerops enforced `0.5 GB` RAM for PostgreSQL rather than the forecast's `0.25 GB`, producing the observed `$5.10 / 30 days` dashboard total. This remains below the existing Z15 promotional balance. A Zerops daily spending limit is an alert, not a hard stop.
 
 ## Run locally
 
@@ -63,7 +65,7 @@ npm ci
 npm run dev
 ```
 
-The ordinary dev command starts Vite plus one combined local API/worker process. API and real worker share a persistent PGlite database at `.data/pantry-hold`, so the bundled cached-official fallback and fictional inventory make the demo credential-free. Production keeps API and worker in separate services sharing PostgreSQL. Copy [`.env.example`](./.env.example) to `.env` only when local overrides are needed; never commit the populated file.
+The ordinary dev command starts Vite plus one combined local API/worker process. API and real worker share a persistent PGlite database at `.data/pantry-hold`, so the bundled cached-official fallback and fictional inventory make the demo credential-free. The Zerops deployment keeps API and worker in separate services sharing PostgreSQL. Copy [`.env.example`](./.env.example) to `.env` only when local overrides are needed; never commit the populated file.
 
 Quality gates:
 
@@ -104,6 +106,12 @@ OpenAI Codex assisted with research, product framing, code, tests, delivery conf
 - [Zerops pricing](https://docs.zerops.io/company/pricing)
 - [The Zerops Challenge rules](https://www.wemakedevs.org/hackathons/zerops/rules)
 
-## License and submission
+## Submission checklist
 
-Submission links, live URL, demo video, and final license will be added before judging. The repository intentionally contains no deployment credentials and CI does not deploy.
+- Public source: [github.com/aryanhardahadev/pantry-hold](https://github.com/aryanhardahadev/pantry-hold)
+- Live app: [app-2b48-3000.prg1.zerops.app](https://app-2b48-3000.prg1.zerops.app/)
+- Demo video: `[add after recording]`
+- Public build post: `[add after publishing]`
+- Hackathon submission: `[complete after video and public build post]`
+
+No legal license has been selected for this repository. The repository contains no deployment credentials, and CI does not deploy.

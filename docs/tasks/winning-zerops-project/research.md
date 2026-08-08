@@ -18,7 +18,10 @@ Selected architecture: public Node web/API service, private Node sync/matching w
 
 Kill condition: if official record -> normalized identifiers -> exact inventory match -> hold action is not working through the real worker within the initial implementation spike, switch to the already-scoped Breakwater fallback rather than faking matches.
 
-## Questions
+> [!IMPORTANT]
+> **Current choice: Pantry Hold.** Everything below this notice is a preserved pre-decision research archive. RetryRail and its recommendation, MVP, architecture, scores, and next steps are **retired historical material**, not the current product direction or an alternative implementation plan.
+
+## Historical research questions (retired)
 
 1. What are the verified rules, deliverables, judging signals, deadline, and disqualifiers?
 2. What Zerops services, deployment workflows, observability features, and resource limits fit the available plan and credits?
@@ -26,7 +29,7 @@ Kill condition: if official record -> normalized identifiers -> exact inventory 
 4. Which 3–5 ideas survive comparison on originality, usefulness, technical depth, Zerops fit, demo strength, and schedule risk?
 5. What is the smallest architecture and demo for the leading idea, and what evidence would invalidate the recommendation?
 
-## Executive conclusion
+## Historical executive conclusion: RetryRail (retired)
 
 The provisional recommendation is **RetryRail**: a self-hosted webhook reliability gateway and failure lab. It accepts webhook events immediately, queues delivery, records every attempt, retries with visible backoff, dead-letters persistent failures, and lets a developer replay an event after recovery. A built-in unstable receiver makes the failure → retry → recovery sequence deterministic in the live demo.
 
@@ -34,7 +37,7 @@ This is stronger than a generic AI agent, CRUD dashboard, or Zerops YAML generat
 
 The recommendation is not approved yet. It should be overturned if the user has fewer than roughly 12 focused build hours, is not comfortable with TypeScript/backend/SQL, strongly prefers a different domain, or discovers a near-identical entry already being built in the event community.
 
-## Verified findings
+## Historical verified findings (preserved evidence)
 
 ### Event rules and judging signals
 
@@ -92,7 +95,7 @@ The recommendation is not approved yet. It should be overturned if the user has 
 - **Confidence:** Medium.
 - **Planning implication:** Prioritize a visually legible event timeline and a deterministic failure-recovery demo. Avoid another generic chat surface or broad “AI operating system.”
 
-## Candidate comparison
+## Historical candidate comparison (retired decision set)
 
 Scores are 1–5. Weighted total is out of 100: originality 20%, usefulness 20%, technical depth 15%, Zerops fit 20%, demo strength 15%, time feasibility 10%.
 
@@ -104,7 +107,7 @@ Scores are 1–5. Weighted total is out of 100: originality 20%, usefulness 20%,
 | **Lineage Lab — replayable data-transformation pipeline with provenance graph**        |        4 |      4 |     5 |          5 |    3 |        3 |   **82** |
 | **Blueprint Doctor — Zerops config analyser, cost guard, and architecture visualiser** |        2 |      4 |     4 |          5 |    4 |        4 |   **76** |
 
-## Adversarial review: why each idea could lose
+## Historical adversarial review (retired candidates)
 
 ### RetryRail
 
@@ -136,7 +139,7 @@ Scores are 1–5. Weighted total is out of 100: originality 20%, usefulness 20%,
 - **What saves it:** Real repository analysis plus a validated import/deploy dry run and hard resource-cost guardrails.
 - **Kill condition:** If the main output is generated YAML or an LLM explanation.
 
-## Recommended MVP: RetryRail
+## Historical proposed MVP: RetryRail (retired)
 
 ### One-sentence pitch
 
@@ -217,7 +220,7 @@ Use a database transaction and row locking (`FOR UPDATE SKIP LOCKED`) for a simp
 | Resource credit burn                     | Shared CPU, narrow max RAM/disk, one container, no HA/observability add-ons             | Do not import until maximum cost is reviewed and approved  |
 | Flaky demo target                        | Built-in deterministic receiver and seed/reset command                                  | Never depend on an external SaaS for the recorded demo     |
 
-## Recommendation for planning
+## Historical planning recommendation (retired)
 
 Approve RetryRail only after the user answers two scope-changing questions:
 
