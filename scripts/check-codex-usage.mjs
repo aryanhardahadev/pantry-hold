@@ -47,6 +47,12 @@ lines.on("line", (line) => {
         `STOP: Codex quota is ${highestUsedPercent}% used (threshold: 99%).`,
       );
       process.exitCode = 99;
+    } else if (highestUsedPercent >= 85) {
+      console.error(
+        `HANDOFF: Codex quota is ${highestUsedPercent}% used (15% or less remains). ` +
+          "Do not spawn new Codex-heavy work; prepare the approved sol-orchestrator Grok fallback.",
+      );
+      process.exitCode = 85;
     }
 
     processHandle.stdin.end();

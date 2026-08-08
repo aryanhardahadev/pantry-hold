@@ -49,6 +49,8 @@ One-day TypeScript hackathon project. The approved product contract and scope ar
 - Do not amend or rewrite published history.
 - Do not push, open a PR, deploy, provision services, or mutate external accounts unless the
   main task has confirmed the applicable authorization and safety gate.
+- At 85% Codex quota used, stop spawning new Codex-heavy work and prepare the user-approved
+  `sol-orchestrator` Grok fallback. At 99% used, stop all active agents before paid credits begin.
 
 ## Handoff
 

@@ -14,6 +14,8 @@ Pantry Hold is selected after a final three-way jury. Local Git is initialized o
 - Overnight research retired RetryRail and ColdChain, compared RecallReady/Pantry Hold/Breakwater, and selected Pantry Hold.
 - Official openFDA endpoint and current exact identifier fields verified.
 - Official Codex quota guard added; last check before implementation showed 31% used.
+- Usage policy extended: at 85% used, prepare the local `sol-orchestrator` Grok 4.5 fallback;
+  at 99% used, stop all agents before prepaid credits are consumed.
 - User authorized local Git, incremental commits, GitHub Actions, and promo-balance Zerops deployment after a forecast.
 
 ## In progress
