@@ -111,7 +111,7 @@ export function normalizeOpenFdaRecord(
 
 export function buildOpenFdaUrl(recallNumber: string): string {
   const url = new URL("https://api.fda.gov/food/enforcement.json");
-  url.searchParams.set("search", `recall_number:\"${recallNumber}\"`);
+  url.searchParams.set("search", `recall_number:"${recallNumber}"`);
   url.searchParams.set("limit", "1");
   return url.toString();
 }

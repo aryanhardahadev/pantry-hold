@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import type { AddressInfo } from "node:net";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   loadDemoInventory,
@@ -10,6 +11,7 @@ import {
   PantryRepository,
   PGliteDatabase,
 } from "../../../packages/db/src/index.js";
+import { startWorkerHealthServer } from "./health.js";
 import { PollingWorker } from "./worker.js";
 
 const fixturePath = resolve("fixtures/openfda/H-1180-2026.json");
@@ -135,5 +137,49 @@ describe("polling worker integration", () => {
     const dashboard = await repository.getDashboard();
     expect(dashboard.recalls).toHaveLength(1);
     expect(dashboard.matches).toHaveLength(0);
+  });
+
+  it("reports worker liveness and database readiness over the internal HTTP port", async () => {
+    const worker = new PollingWorker({
+      repository,
+      fixturePath,
+      logger,
+      fetchImpl: async () => {
+        throw new Error("offline for deterministic health test");
+      },
+    });
+    const abortController = new AbortController();
+    const workerCompletion = worker.start(abortController.signal);
+    const server = await startWorkerHealthServer({
+      port: 0,
+      host: "127.0.0.1",
+      worker,
+      repository,
+      logger,
+    });
+
+    try {
+      const { port } = server.address() as AddressInfo;
+      const health = await fetch(`http://127.0.0.1:${port}/healthz`);
+      expect(health.status).toBe(200);
+      await expect(health.json()).resolves.toMatchObject({
+        status: "ok",
+        service: "worker",
+        started: true,
+      });
+
+      const ready = await fetch(`http://127.0.0.1:${port}/readyz`);
+      expect(ready.status).toBe(200);
+      await expect(ready.json()).resolves.toEqual({
+        status: "ready",
+        service: "worker",
+      });
+    } finally {
+      abortController.abort();
+      await workerCompletion;
+      await new Promise<void>((resolveClose, rejectClose) =>
+        server.close((error) => (error ? rejectClose(error) : resolveClose())),
+      );
+    }
   });
 });

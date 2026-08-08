@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://api.app-prg1.zerops.io/api/rest/public/settings/import-project-yml-json-schema.json
+# Services for the existing Lightweight project only. Importing/provisioning
+# remains a deliberate external gate owned by the main task.
+services:
+  - hostname: app
+    type: alpine/nodejs@22
+    mode: NON_HA
+    buildFromGit: https://github.com/aryanhardahadev/pantry-hold
+    zeropsSetup: app
+    enableSubdomainAccess: true
+    priority: 2
+    minContainers: 1
+    maxContainers: 1
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minCpu: 1
+      maxCpu: 1
+      minRam: 0.25
+      maxRam: 0.25
+      minDisk: 1
+      maxDisk: 1
+
+  - hostname: worker
+    type: alpine/nodejs@22
+    mode: NON_HA
+    buildFromGit: https://github.com/aryanhardahadev/pantry-hold
+    zeropsSetup: worker
+    enableSubdomainAccess: false
+    priority: 2
+    minContainers: 1
+    maxContainers: 1
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minCpu: 1
+      maxCpu: 1
+      minRam: 0.25
+      maxRam: 0.25
+      minDisk: 1
+      maxDisk: 1
+
+  - hostname: db
+    type: postgresql:single@18
+    enableSubdomainAccess: false
+    priority: 1
+    verticalAutoscaling:
+      cpuMode: SHARED
+      minCpu: 1
+      maxCpu: 1
+      minRam: 0.25
+      maxRam: 0.25
+      minDisk: 1
+      maxDisk: 1

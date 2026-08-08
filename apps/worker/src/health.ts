@@ -27,6 +27,9 @@ export async function startWorkerHealthServer(options: {
 
     if (request.url === "/readyz") {
       try {
+        if (!options.worker.health().started) {
+          throw new Error("worker polling loop has not started");
+        }
         await options.repository.checkReady();
         response.statusCode = 200;
         response.end(JSON.stringify({ status: "ready", service: "worker" }));

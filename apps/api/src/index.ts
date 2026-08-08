@@ -17,7 +17,12 @@ async function main(): Promise<void> {
   const repository = new PantryRepository(database);
   await repository.seedDemoIfEmpty(inventory);
 
-  const app = buildApi({ repository, demoInventory: inventory, logger: true });
+  const app = buildApi({
+    repository,
+    demoInventory: inventory,
+    logger: true,
+    webRoot: resolve(process.env.WEB_ROOT ?? "dist/web"),
+  });
   const close = async () => {
     await app.close();
     await database.close();

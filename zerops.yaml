@@ -17,7 +17,7 @@ zerops:
       readinessCheck:
         httpGet:
           port: 3000
-          path: /api/health
+          path: /readyz
     run:
       base: nodejs@22
       ports:
@@ -33,7 +33,7 @@ zerops:
       healthCheck:
         httpGet:
           port: 3000
-          path: /api/health
+          path: /healthz
         failureTimeout: 60
         disconnectTimeout: 30
         recoveryTimeout: 30
@@ -52,18 +52,27 @@ zerops:
         - package.json
     deploy:
       readinessCheck:
-        exec:
-          command: ps | grep -q "[d]ist/apps/worker/src/index.js"
+        httpGet:
+          port: 3001
+          path: /readyz
     run:
       base: nodejs@22
+      ports:
+        - port: 3001
+          protocol: TCP
+          httpSupport: true
       envVariables:
         NODE_ENV: production
+        HOST: 0.0.0.0
         DATABASE_URL: ${db_connectionString}
-        OPENFDA_SOURCE_MODE: cached_official_fixture
         OPENFDA_FIXTURE_PATH: fixtures/openfda/H-1180-2026.json
+        WORKER_HEALTH_PORT: "3001"
       start: npm run start:worker
       healthCheck:
-        exec:
-          command: ps | grep -q "[d]ist/apps/worker/src/index.js"
+        httpGet:
+          port: 3001
+          path: /healthz
         failureTimeout: 60
+        disconnectTimeout: 30
+        recoveryTimeout: 30
         execPeriod: 10
