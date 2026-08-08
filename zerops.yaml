@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://api.app-prg1.zerops.io/api/rest/public/settings/zerops-yml-json-schema.json
+# Service creation and public access remain deliberate Zerops console/import steps.
+# This file configures builds and deploys; it does not auto-deploy or contain secrets.
+zerops:
+  - setup: app
+    build:
+      base: nodejs@22
+      buildCommands:
+        - npm ci
+        - npm run build
+      deployFiles:
+        - dist
+        - fixtures
+        - node_modules
+        - package.json
+    deploy:
+      readinessCheck:
+        httpGet:
+          port: 3000
+          path: /api/health
+    run:
+      base: nodejs@22
+      ports:
+        - port: 3000
+          protocol: TCP
+          httpSupport: true
+      envVariables:
+        NODE_ENV: production
+        HOST: 0.0.0.0
+        PORT: "3000"
+        DATABASE_URL: ${db_connectionString}
+      start: npm run start:api
+      healthCheck:
+        httpGet:
+          port: 3000
+          path: /api/health
+        failureTimeout: 60
+        disconnectTimeout: 30
+        recoveryTimeout: 30
+        execPeriod: 10
+
+  - setup: worker
+    build:
+      base: nodejs@22
+      buildCommands:
+        - npm ci
+        - npm run build
+      deployFiles:
+        - dist
+        - fixtures
+        - node_modules
+        - package.json
+    deploy:
+      readinessCheck:
+        exec:
+          command: ps | grep -q "[d]ist/apps/worker/src/index.js"
+    run:
+      base: nodejs@22
+      envVariables:
+        NODE_ENV: production
+        DATABASE_URL: ${db_connectionString}
+        OPENFDA_SOURCE_MODE: cached_official_fixture
+        OPENFDA_FIXTURE_PATH: fixtures/openfda/H-1180-2026.json
+      start: npm run start:worker
+      healthCheck:
+        exec:
+          command: ps | grep -q "[d]ist/apps/worker/src/index.js"
+        failureTimeout: 60
+        execPeriod: 10

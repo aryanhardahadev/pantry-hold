@@ -1,0 +1,108 @@
+# Pantry Hold
+
+> **An official recall may match items in this pantry. See the exact identifier evidence, place the fictional inventory record on hold, and open the source.**
+
+Pantry Hold is a recall-triage board for a **fictional demo pantry**. A private worker reads official openFDA food-enforcement data (or the bundled cached copy of an official openFDA response), extracts explicitly labelled identifiers, and compares them with fictional inventory. It reports only deterministic **possible matches** for human review.
+
+| 3-second value                            | Proof, not prediction                           | Human action                                                        |
+| ----------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
+| Find a possible recall-to-inventory match | Show the exact product-code or lot intersection | Place the inventory record on hold or resolve it with an audit note |
+
+## The problem
+
+Small pantry teams may have inventory labels and an official enforcement record but no quick way to compare the two while preserving the evidence. Product names alone are ambiguous. Pantry Hold narrows the review queue using exact typed identifiers and leaves the decision with a person.
+
+## Demo in under a minute
+
+1. Open the dashboard and notice the persistent **fictional demo data** label.
+2. Run/reset the seeded demo; it works without credentials and uses cached official record `H-1180-2026`.
+3. Inspect the single possible match. The evidence shows `product_code:GJ96` and `lot:25/08001` on both records.
+4. Compare the second item with the same product name. Its identifiers differ, so it does **not** match.
+5. Place the possible match on hold, add a note, then resolve it. The audit timeline preserves both actions.
+6. Open the official source URL from the record card.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Judge["Judge / pantry reviewer"] -->|HTTPS| App["app · public Node.js 22\nReact + Fastify"]
+  App -->|private DATABASE_URL| DB[("db · private PostgreSQL")]
+  Worker["worker · private Node.js 22\nsource sync + exact matcher"] -->|private DATABASE_URL| DB
+  FDA["openFDA official endpoint\nor cached official response"] --> Worker
+```
+
+The UI only renders persisted results. The private worker owns source ingestion, normalization, and exact identifier matching; the browser does not synthesize possible matches.
+
+## Why Zerops is part of the product
+
+- `app` is the only public runtime. It serves the UI/API on port `3000` with readiness and continuous health checks.
+- `worker` has no declared port and stays private. It performs source sync and matching away from the request path.
+- `db` is a private, single-container PostgreSQL service. Both runtimes receive `DATABASE_URL` through the Zerops-generated `${db_connectionString}` reference; no credential is committed.
+- [`zerops.yaml`](./zerops.yaml) pins both runtimes to Node.js 22 and defines reproducible build/run pipelines.
+- [The config validator](./scripts/validate-config.mjs) fails if the worker becomes public, the database reference is replaced, checks disappear, or literal secrets are added.
+
+### Proposed resource envelope and cost guard
+
+This is a demo-sized forecast to review in the Zerops calculator **before provisioning**. It is not an auto-deploy plan.
+
+| Service     | Visibility | Proposed cap                                             | Approx. 30-day ceiling* |
+| ----------- | ---------- | -------------------------------------------------------- | ----------------------: |
+| `app`       | Public     | 0.5 shared CPU, 0.5 GB RAM, 1 GB disk, 1 container       |                   $1.90 |
+| `worker`    | Private    | 0.5 shared CPU, 0.5 GB RAM, 1 GB disk, 1 container       |                   $1.90 |
+| `db`        | Private    | PostgreSQL single, 0.5 shared CPU, 0.5 GB RAM, 2 GB disk |                   $2.00 |
+| **Maximum** |            | No HA, add-ons, dedicated IP, or advanced observability  |     **$5.80 / 30 days** |
+
+\*Estimate based on published rates of $0.60/shared CPU, $0.75/0.25 GB RAM, and $0.05/0.5 GB disk per 30 days. Confirm the live calculator values and the existing promo balance before creating services. A Zerops daily spending limit is an alert, not a hard stop.
+
+## Run locally
+
+Prerequisites: Node.js 22 and npm.
+
+```bash
+npm ci
+npm run dev
+```
+
+The bundled cached-official fixture and fictional inventory make the core demo credential-free. Copy [`.env.example`](./.env.example) to `.env` only when local overrides are needed; never commit the populated file.
+
+Quality gates:
+
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+node scripts/validate-config.mjs
+node scripts/delivery-config.test.mjs
+npm test
+npm run build
+npm audit --omit=dev --audit-level=high
+```
+
+## Data and safety boundaries
+
+- Inventory is fictional demo data and must not be represented as a real pantry's stock.
+- A possible match requires equality of **exact typed identifiers** such as product code, UPC, or lot. The matcher never uses fuzzy product-name matching.
+- Product-name similarity never creates a match or hold.
+- The source is the official openFDA food-enforcement endpoint or a clearly labelled cached copy of an official openFDA response, stored with source URL, fetch time, and raw hash.
+- Pantry Hold does not determine whether food is safe, issue public alerts, certify compliance, or offer consumer advice. It supports internal human review and links back to source evidence.
+- openFDA notes that enforcement reports do not contain every recall and should not be used as a recall-lifecycle or public-alert system.
+
+## AI disclosure
+
+OpenAI Codex assisted with research, product framing, code, tests, delivery configuration, and documentation. The human author selected the product, owns the implementation and deployment decisions, reviews generated work, and can explain the deterministic matching path. Material assistance is recorded in the project’s [AI usage disclosure log](./docs/tasks/winning-zerops-project/ai-usage.md).
+
+## Sources
+
+- [openFDA Food Enforcement API overview](https://open.fda.gov/apis/food/enforcement/)
+- [openFDA endpoint usage and limitations](https://open.fda.gov/apis/food/enforcement/how-to-use-the-endpoint/)
+- [openFDA searchable fields](https://open.fda.gov/apis/food/enforcement/searchable-fields/)
+- [Official cached record query: `H-1180-2026`](https://api.fda.gov/food/enforcement.json?search=recall_number:%22H-1180-2026%22&limit=1)
+- [Zerops Node.js build/deploy pipeline](https://docs.zerops.io/nodejs/how-to/build-pipeline)
+- [Zerops environment-variable references](https://docs.zerops.io/features/env-variables)
+- [Zerops PostgreSQL private connections](https://docs.zerops.io/postgresql/how-to/connect)
+- [Zerops pricing](https://docs.zerops.io/company/pricing)
+- [The Zerops Challenge rules](https://www.wemakedevs.org/hackathons/zerops/rules)
+
+## License and submission
+
+Submission links, live URL, demo video, and final license will be added before judging. The repository intentionally contains no deployment credentials and CI does not deploy.
