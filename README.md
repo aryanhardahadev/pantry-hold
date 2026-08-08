@@ -4,9 +4,9 @@
 
 Pantry Hold is a recall-triage board for a **fictional demo pantry** serving community meals with bulk-preparation supplies. A private worker reads official openFDA food-enforcement data (or the bundled cached copy of an official openFDA response), extracts explicitly labelled identifiers, and compares them with fictional inventory. It reports only deterministic **possible matches** for human review; the demo checks one official record to prove the full pipeline and is not comprehensive recall coverage.
 
-| 3-second value                            | Proof, not prediction                           | Human action                                                        |
-| ----------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
-| Find a possible recall-to-inventory match | Show the exact product-code or lot intersection | Place the inventory record on hold or resolve it with an audit note |
+| 3-second value                            | Proof, not prediction                              | Human action                                                        |
+| ----------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------- |
+| Find a possible recall-to-inventory match | Show an exact lot AND an exact product code or UPC | Place the inventory record on hold or resolve it with an audit note |
 
 ## The problem
 
@@ -82,7 +82,7 @@ npm audit --omit=dev --audit-level=high
 ## Data and safety boundaries
 
 - Inventory is fictional demo data and must not be represented as a real pantry's stock.
-- A possible match requires equality of **exact typed identifiers** such as product code, UPC, or lot. The matcher never uses fuzzy product-name matching.
+- A possible match requires equality of **exact typed identifiers**: an exact lot AND an exact product code or UPC. The matcher never uses fuzzy product-name matching.
 - Product-name similarity never creates a match or hold.
 - The source is the official openFDA food-enforcement endpoint or a clearly labelled cached copy of an official openFDA response, stored with source URL, fetch time, and raw hash.
 - Pantry Hold does not determine whether food is safe, issue public alerts, certify compliance, or offer consumer advice. It supports internal human review and links back to source evidence.

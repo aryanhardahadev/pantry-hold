@@ -4,7 +4,7 @@
 zerops:
   - setup: app
     build:
-      base: nodejs@22
+      base: alpine/nodejs@22
       buildCommands:
         - npm ci
         - npm run build
@@ -19,10 +19,9 @@ zerops:
           port: 3000
           path: /readyz
     run:
-      base: nodejs@22
+      base: alpine/nodejs@22
       ports:
         - port: 3000
-          protocol: TCP
           httpSupport: true
       envVariables:
         NODE_ENV: production
@@ -41,7 +40,7 @@ zerops:
 
   - setup: worker
     build:
-      base: nodejs@22
+      base: alpine/nodejs@22
       buildCommands:
         - npm ci
         - npm run build
@@ -56,10 +55,9 @@ zerops:
           port: 3001
           path: /readyz
     run:
-      base: nodejs@22
+      base: alpine/nodejs@22
       ports:
         - port: 3001
-          protocol: TCP
           httpSupport: true
       envVariables:
         NODE_ENV: production

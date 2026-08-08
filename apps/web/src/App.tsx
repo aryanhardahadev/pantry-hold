@@ -47,8 +47,29 @@ function formatReportDate(value: string): string {
   return formatDate(value);
 }
 
-function plural(value: number, singular: string, pluralForm = `${singular}s`) {
+export function plural(
+  value: number,
+  singular: string,
+  pluralForm = `${singular}s`,
+) {
   return value === 1 ? singular : pluralForm;
+}
+
+export function matchActionState(status: MatchStatus) {
+  const isNeedsReview = status === "needs_review";
+  return {
+    targetStatus: isNeedsReview ? ("on_hold" as const) : ("resolved" as const),
+    defaultNote: isNeedsReview ? defaultHoldNote : defaultResolveNote,
+    noteLabel: isNeedsReview ? "Hold note" : "Resolution note",
+    submitLabel: isNeedsReview ? "Hold for staff review" : "Resolve review",
+  };
+}
+
+export function matchActionStateKey(
+  matchId: string,
+  status: MatchStatus,
+): string {
+  return `${matchId}:${status}`;
 }
 
 function statusLabel(status: MatchStatus): string {
@@ -104,7 +125,7 @@ function LoadingState() {
         <p className="eyebrow">Checking the demo pantry</p>
         <h1>Loading exact-match evidence…</h1>
         <p>
-          Connecting inventory labels to the latest available source record.
+          Connecting inventory labels to the selected official source record.
         </p>
       </div>
     </main>
@@ -158,23 +179,18 @@ interface MatchActionProps {
 }
 
 function MatchAction({ detail, busy, onUpdate }: MatchActionProps) {
-  const isNeedsReview = detail.match.status === "needs_review";
-  const [note, setNote] = useState(
-    isNeedsReview ? defaultHoldNote : defaultResolveNote,
-  );
-  const targetStatus = isNeedsReview ? "on_hold" : "resolved";
+  const action = matchActionState(detail.match.status);
+  const [note, setNote] = useState(action.defaultNote);
 
   return (
     <form
       className="action-form"
       onSubmit={(event) => {
         event.preventDefault();
-        void onUpdate(detail, targetStatus, note);
+        void onUpdate(detail, action.targetStatus, note);
       }}
     >
-      <label htmlFor={`note-${detail.match.id}`}>
-        {isNeedsReview ? "Hold note" : "Resolution note"}
-      </label>
+      <label htmlFor={`note-${detail.match.id}`}>{action.noteLabel}</label>
       <div className="action-row">
         <input
           id={`note-${detail.match.id}`}
@@ -184,11 +200,7 @@ function MatchAction({ detail, busy, onUpdate }: MatchActionProps) {
           onChange={(event) => setNote(event.target.value)}
         />
         <button className="primary-button" type="submit" disabled={busy}>
-          {busy
-            ? "Saving…"
-            : isNeedsReview
-              ? "Hold for staff review"
-              : "Resolve review"}
+          {busy ? "Saving…" : action.submitLabel}
         </button>
       </div>
       <p>
@@ -481,11 +493,19 @@ export function App() {
                   </div>
                   <span>
                     {focusMatch.match.evidence.length} exact identifier{" "}
-                    {plural(focusMatch.match.evidence.length, "match")}
+                    {plural(
+                      focusMatch.match.evidence.length,
+                      "match",
+                      "matches",
+                    )}
                   </span>
                 </div>
                 <MatchEvidence detail={focusMatch} />
                 <MatchAction
+                  key={matchActionStateKey(
+                    focusMatch.match.id,
+                    focusMatch.match.status,
+                  )}
                   detail={focusMatch}
                   busy={busyAction === `match:${focusMatch.match.id}`}
                   onUpdate={handleMatchUpdate}
@@ -525,7 +545,7 @@ export function App() {
             <span>02</span>
             <p>
               <strong>Exact identifiers only</strong>
-              Product code, UPC, or lot must be identical.
+              An exact lot and an exact product code or UPC must be identical.
             </p>
           </div>
           <div>
@@ -642,7 +662,10 @@ export function App() {
                   <p className="eyebrow">Human workflow</p>
                   <h2>Audit timeline</h2>
                 </div>
-                <span>{snapshot.audit.length} events</span>
+                <span>
+                  {snapshot.audit.length}{" "}
+                  {plural(snapshot.audit.length, "event")}
+                </span>
               </div>
               {snapshot.audit.length ? (
                 <ol className="timeline">

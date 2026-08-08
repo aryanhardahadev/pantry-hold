@@ -37,6 +37,19 @@ test("Zerops import pins the approved private, minimum-resource topology", () =>
   assert.deepEqual(validateZeropsImportConfig(zeropsImportSource), []);
 });
 
+test("import validator requires the database before dependent services", () => {
+  const invalid = zeropsImportSource.replace(
+    "    priority: 3",
+    "    priority: 1",
+  );
+
+  assert.ok(
+    validateZeropsImportConfig(invalid).includes(
+      "db import priority must exceed app and worker priorities",
+    ),
+  );
+});
+
 test("import validator rejects a public worker and invalid CPU minimum", () => {
   const invalid = zeropsImportSource
     .replace("enableSubdomainAccess: false", "enableSubdomainAccess: true")
