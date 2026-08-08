@@ -1,4 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
+import { mkdirSync } from "node:fs";
 import { Pool, type QueryResultRow } from "pg";
 
 export type SqlRow = Record<string, unknown>;
@@ -124,5 +125,9 @@ export function createDatabaseFromEnv(
     return new PgDatabase(connectionString);
   }
 
-  return new PGliteDatabase(environment.PGLITE_DATA_DIR);
+  const dataDir = environment.PGLITE_DATA_DIR;
+  if (dataDir) {
+    mkdirSync(dataDir, { recursive: true });
+  }
+  return new PGliteDatabase(dataDir);
 }

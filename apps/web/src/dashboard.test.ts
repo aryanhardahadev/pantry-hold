@@ -76,9 +76,9 @@ describe("dashboard view", () => {
   it("counts only inventory with an explicit possible match", () => {
     const view = deriveDashboardView(baseSnapshot);
 
-    expect(view.affectedItems).toBe(1);
-    expect(view.affectedUnits).toBe(6);
-    expect(view.affectedPortions).toBe(180);
+    expect(view.reviewItems).toBe(1);
+    expect(view.reviewUnits).toBe(6);
+    expect(view.reviewPortions).toBe(180);
     expect(view.activeMatches[0]?.inventory.id).toBe("matched");
   });
 
@@ -104,7 +104,7 @@ describe("dashboard view", () => {
 
     expect(view.activeMatches).toHaveLength(0);
     expect(view.resolvedMatches).toHaveLength(1);
-    expect(view.affectedPortions).toBe(0);
+    expect(view.reviewPortions).toBe(0);
   });
 
   it("renders typed identifier names without implying fuzzy matching", () => {

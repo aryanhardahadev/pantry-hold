@@ -1,3 +1,4 @@
+import fastifyStatic from "@fastify/static";
 import Fastify, { type FastifyInstance } from "fastify";
 import { updateMatchSchema } from "../../../packages/core/src/index.js";
 import type { InventoryItem } from "../../../packages/core/src/index.js";
@@ -7,6 +8,7 @@ export interface BuildApiOptions {
   repository: PantryRepository;
   demoInventory: InventoryItem[];
   logger?: boolean;
+  webRoot?: string;
 }
 
 export function buildApi(options: BuildApiOptions): FastifyInstance {
@@ -74,6 +76,18 @@ export function buildApi(options: BuildApiOptions): FastifyInstance {
       return { match };
     },
   );
+
+  if (options.webRoot) {
+    app.register(fastifyStatic, {
+      root: options.webRoot,
+    });
+    app.setNotFoundHandler((request, reply) => {
+      if (request.method === "GET" && !request.url.startsWith("/api/")) {
+        return reply.type("text/html; charset=utf-8").sendFile("index.html");
+      }
+      return reply.code(404).send({ error: "not_found" });
+    });
+  }
 
   return app;
 }

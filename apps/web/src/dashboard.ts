@@ -14,9 +14,9 @@ export interface MatchDetail {
 export interface DashboardView {
   activeMatches: MatchDetail[];
   resolvedMatches: MatchDetail[];
-  affectedItems: number;
-  affectedUnits: number;
-  affectedPortions: number;
+  reviewItems: number;
+  reviewUnits: number;
+  reviewPortions: number;
 }
 
 export function deriveDashboardView(
@@ -38,7 +38,7 @@ export function deriveDashboardView(
   const activeMatches = details.filter(
     ({ match }) => match.status !== "resolved",
   );
-  const affectedInventory = Array.from(
+  const reviewInventory = Array.from(
     new Map(
       activeMatches.map(({ inventory }) => [inventory.id, inventory]),
     ).values(),
@@ -47,12 +47,12 @@ export function deriveDashboardView(
   return {
     activeMatches,
     resolvedMatches: details.filter(({ match }) => match.status === "resolved"),
-    affectedItems: affectedInventory.length,
-    affectedUnits: affectedInventory.reduce(
+    reviewItems: reviewInventory.length,
+    reviewUnits: reviewInventory.reduce(
       (total, item) => total + item.quantity,
       0,
     ),
-    affectedPortions: affectedInventory.reduce(
+    reviewPortions: reviewInventory.reduce(
       (total, item) => total + item.estimatedMealPortions,
       0,
     ),

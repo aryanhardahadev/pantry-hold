@@ -1,8 +1,8 @@
 # Pantry Hold
 
-> **An official recall may match items in this pantry. See the exact identifier evidence, place the fictional inventory record on hold, and open the source.**
+> **One fictional community-meal pantry item shares an exact product code and lot with an official record. Review the evidence, record a hold workflow action, and open the source.**
 
-Pantry Hold is a recall-triage board for a **fictional demo pantry**. A private worker reads official openFDA food-enforcement data (or the bundled cached copy of an official openFDA response), extracts explicitly labelled identifiers, and compares them with fictional inventory. It reports only deterministic **possible matches** for human review.
+Pantry Hold is a recall-triage board for a **fictional demo pantry** serving community meals with bulk-preparation supplies. A private worker reads official openFDA food-enforcement data (or the bundled cached copy of an official openFDA response), extracts explicitly labelled identifiers, and compares them with fictional inventory. It reports only deterministic **possible matches** for human review; the demo checks one official record to prove the full pipeline and is not comprehensive recall coverage.
 
 | 3-second value                            | Proof, not prediction                           | Human action                                                        |
 | ----------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
@@ -15,7 +15,7 @@ Small pantry teams may have inventory labels and an official enforcement record 
 ## Demo in under a minute
 
 1. Open the dashboard and notice the persistent **fictional demo data** label.
-2. Run/reset the seeded demo; it works without credentials and uses cached official record `H-1180-2026`.
+2. Run/reset the seeded demo; it works without credentials, attempts the live official openFDA record `H-1180-2026`, and uses the labelled cached official response if the endpoint is unavailable.
 3. Inspect the single possible match. The evidence shows `product_code:GJ96` and `lot:25/08001` on both records.
 4. Compare the second item with the same product name. Its identifiers differ, so it does **not** match.
 5. Place the possible match on hold, add a note, then resolve it. The audit timeline preserves both actions.
@@ -36,23 +36,23 @@ The UI only renders persisted results. The private worker owns source ingestion,
 ## Why Zerops is part of the product
 
 - `app` is the only public runtime. It serves the UI/API on port `3000` with readiness and continuous health checks.
-- `worker` has no declared port and stays private. It performs source sync and matching away from the request path.
+- `worker` stays private and performs source sync and matching away from the request path. Its internal port `3001` is used only for `/readyz` and `/healthz` container probes; the import manifest explicitly disables subdomain access.
 - `db` is a private, single-container PostgreSQL service. Both runtimes receive `DATABASE_URL` through the Zerops-generated `${db_connectionString}` reference; no credential is committed.
-- [`zerops.yaml`](./zerops.yaml) pins both runtimes to Node.js 22 and defines reproducible build/run pipelines.
+- [`zerops.yaml`](./zerops.yaml) pins both runtimes to Node.js 22 and defines reproducible build/run pipelines. [`zerops-import.yaml`](./zerops-import.yaml) is a services-only manifest for the existing Lightweight project; it declares the reviewed, non-HA three-service topology but does not provision it.
 - [The config validator](./scripts/validate-config.mjs) fails if the worker becomes public, the database reference is replaced, checks disappear, or literal secrets are added.
 
 ### Proposed resource envelope and cost guard
 
 This is a demo-sized forecast to review in the Zerops calculator **before provisioning**. It is not an auto-deploy plan.
 
-| Service     | Visibility | Proposed cap                                             | Approx. 30-day ceiling* |
-| ----------- | ---------- | -------------------------------------------------------- | ----------------------: |
-| `app`       | Public     | 0.5 shared CPU, 0.5 GB RAM, 1 GB disk, 1 container       |                   $1.90 |
-| `worker`    | Private    | 0.5 shared CPU, 0.5 GB RAM, 1 GB disk, 1 container       |                   $1.90 |
-| `db`        | Private    | PostgreSQL single, 0.5 shared CPU, 0.5 GB RAM, 2 GB disk |                   $2.00 |
-| **Maximum** |            | No HA, add-ons, dedicated IP, or advanced observability  |     **$5.80 / 30 days** |
+| Service     | Visibility | Proposed cap                                               | Approx. 30-day ceiling* |
+| ----------- | ---------- | ---------------------------------------------------------- | ----------------------: |
+| `app`       | Public     | 1 shared CPU, 0.25 GB RAM, 1 GB disk, 1 container          |                   $1.45 |
+| `worker`    | Private    | 1 shared CPU, 0.25 GB RAM, 1 GB disk, 1 container          |                   $1.45 |
+| `db`        | Private    | PostgreSQL 18 single, 1 shared CPU, 0.25 GB RAM, 1 GB disk |                   $1.45 |
+| **Maximum** |            | No HA, add-ons, dedicated IP, or advanced observability    |     **$4.35 / 30 days** |
 
-\*Estimate based on published rates of $0.60/shared CPU, $0.75/0.25 GB RAM, and $0.05/0.5 GB disk per 30 days. Confirm the live calculator values and the existing promo balance before creating services. A Zerops daily spending limit is an alert, not a hard stop.
+\*Estimate based on published rates of $0.60/shared CPU, $0.75/0.25 GB RAM, and $0.10/1 GB disk per 30 days. The fixed values use the current official minimum of 1 CPU and the PostgreSQL minimums of 0.25 GB RAM and 1 GB disk. Confirm the live calculator values and the existing promo balance before creating services. A Zerops daily spending limit is an alert, not a hard stop.
 
 ## Run locally
 
@@ -63,7 +63,7 @@ npm ci
 npm run dev
 ```
 
-The bundled cached-official fixture and fictional inventory make the core demo credential-free. Copy [`.env.example`](./.env.example) to `.env` only when local overrides are needed; never commit the populated file.
+The ordinary dev command starts Vite plus one combined local API/worker process. API and real worker share a persistent PGlite database at `.data/pantry-hold`, so the bundled cached-official fallback and fictional inventory make the demo credential-free. Production keeps API and worker in separate services sharing PostgreSQL. Copy [`.env.example`](./.env.example) to `.env` only when local overrides are needed; never commit the populated file.
 
 Quality gates:
 
@@ -72,6 +72,7 @@ npm run format:check
 npm run lint
 npm run typecheck
 node scripts/validate-config.mjs
+node scripts/validate-config.mjs zerops-import.yaml
 node scripts/delivery-config.test.mjs
 npm test
 npm run build

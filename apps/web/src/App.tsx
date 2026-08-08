@@ -6,7 +6,15 @@ import type {
   SyncRun,
 } from "../../../packages/core/src/types.ts";
 
-import { fetchDashboard, resetDemo, startSync, updateMatch } from "./api";
+import {
+  fetchDashboard,
+  resetDemo,
+  startSync,
+  updateMatch,
+  waitForScheduledSync,
+  waitForSyncRun,
+  type SyncRunAccepted,
+} from "./api";
 import {
   deriveDashboardView,
   identifierLabel,
@@ -51,6 +59,9 @@ function statusLabel(status: MatchStatus): string {
 
 function syncModeLabel(sync: SyncRun | null): string {
   if (!sync) return "No source sync yet";
+  if (sync.status === "queued") return "Official-source sync queued";
+  if (sync.status === "running") return "Official-source sync running";
+  if (sync.status === "failed") return "Official-source sync failed";
   return sync.sourceMode === "live"
     ? "Live official openFDA response"
     : "Cached official openFDA response";
@@ -214,6 +225,41 @@ export function App() {
     void loadDashboard();
   }, [loadDashboard]);
 
+  useEffect(() => {
+    if (!snapshot || busyAction !== null) return;
+
+    const syncRun = snapshot.latestSync;
+    if (
+      syncRun &&
+      syncRun.status !== "queued" &&
+      syncRun.status !== "running"
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    const completion = syncRun
+      ? waitForSyncRun(syncRun.id)
+      : waitForScheduledSync();
+    void completion
+      .then((completed) => {
+        if (!cancelled) setSnapshot(completed);
+      })
+      .catch((caught: unknown) => {
+        if (!cancelled) {
+          setError(
+            caught instanceof Error
+              ? caught.message
+              : "The initial source sync could not be completed.",
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [busyAction, snapshot]);
+
   const runAction = useCallback(
     async (action: ActionName, request: () => Promise<unknown>) => {
       setBusyAction(action);
@@ -227,6 +273,30 @@ export function App() {
             ? caught.message
             : "The action could not be completed.",
         );
+      } finally {
+        setBusyAction(null);
+      }
+    },
+    [loadDashboard],
+  );
+
+  const runSyncAction = useCallback(
+    async (
+      action: "sync" | "reset",
+      request: () => Promise<SyncRunAccepted>,
+    ) => {
+      setBusyAction(action);
+      setError(null);
+      try {
+        const accepted = await request();
+        setSnapshot(await waitForSyncRun(accepted.syncRun.id));
+      } catch (caught) {
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "The source sync could not be completed.",
+        );
+        await loadDashboard();
       } finally {
         setBusyAction(null);
       }
@@ -275,13 +345,13 @@ export function App() {
     <div className="app-frame">
       <div className="demo-banner">
         <div>
-          <strong>Demo inventory is fictional</strong>
+          <strong>Judging demo · fictional inventory</strong>
           <span>
-            Inventory, quantities, and actions are demonstration data—not a
-            public alert.
+            This models a community-meal pantry’s bulk-preparation supplies and
+            actions—never a public alert.
           </span>
         </div>
-        <span className="no-login">No login required</span>
+        <span className="no-login">Judging demo · no login</span>
       </div>
 
       <header className="site-header">
@@ -299,14 +369,14 @@ export function App() {
           <button
             className="secondary-button"
             disabled={busyAction !== null}
-            onClick={() => void runAction("reset", resetDemo)}
+            onClick={() => void runSyncAction("reset", resetDemo)}
           >
             {busyAction === "reset" ? "Resetting…" : "Reset demo"}
           </button>
           <button
             className="secondary-button sync-button"
             disabled={busyAction !== null}
-            onClick={() => void runAction("sync", startSync)}
+            onClick={() => void runSyncAction("sync", startSync)}
           >
             {busyAction === "sync" ? "Syncing…" : "Sync source"}
           </button>
@@ -335,34 +405,34 @@ export function App() {
             </p>
             <h1>
               {focusMatch
-                ? `An official recall may match ${view.affectedItems} pantry ${plural(view.affectedItems, "item")}.`
-                : "No exact-identifier possible matches are active."}
+                ? `${view.reviewItems === 1 ? "One" : view.reviewItems} fictional pantry ${plural(view.reviewItems, "item")} ${view.reviewItems === 1 ? "shares" : "share"} an exact product code and lot with the official record.`
+                : "No exact identifier match was found in the record checked."}
             </h1>
             <p className="hero-explainer">
               {focusMatch
                 ? "Pantry Hold found matching typed identifiers in an official openFDA record. A person still decides what to do next."
-                : "Product names are never used to create a hold. Sync the source to check exact product codes, UPCs, and lots."}
+                : "This is not a safety determination. Product names are never used to create a hold."}
             </p>
 
             {focusMatch ? (
               <div
                 className="impact-strip"
-                aria-label="Potentially affected inventory"
+                aria-label="Fictional inventory under review"
               >
                 <div>
-                  <strong>{view.affectedUnits}</strong>
+                  <strong>{view.reviewUnits}</strong>
                   <span>
                     {plural(
-                      view.affectedUnits,
+                      view.reviewUnits,
                       focusMatch.inventory.unit.replace(/s$/, ""),
                       focusMatch.inventory.unit,
                     )}{" "}
-                    affected
+                    under review
                   </span>
                 </div>
                 <div>
-                  <strong>{view.affectedPortions}</strong>
-                  <span>estimated meal portions</span>
+                  <strong>{view.reviewPortions}</strong>
+                  <span>estimated portions in inventory under review</span>
                 </div>
                 <div>
                   <strong>{focusMatch.inventory.shelf}</strong>
@@ -409,7 +479,10 @@ export function App() {
                     <p className="eyebrow">Why this appeared</p>
                     <h3>Exact typed identifiers</h3>
                   </div>
-                  <span>{focusMatch.match.evidence.length} verified</span>
+                  <span>
+                    {focusMatch.match.evidence.length} exact identifier{" "}
+                    {plural(focusMatch.match.evidence.length, "match")}
+                  </span>
                 </div>
                 <MatchEvidence detail={focusMatch} />
                 <MatchAction
@@ -425,13 +498,13 @@ export function App() {
                 </span>
                 <h2>No active possible matches</h2>
                 <p>
-                  No match does not mean safe or unaffected. It only means no
-                  exact typed identifier match is active in this demo snapshot.
+                  No exact identifier match was found in the record checked.
+                  This is not a safety determination.
                 </p>
                 <button
                   className="primary-button"
                   disabled={busyAction !== null}
-                  onClick={() => void runAction("sync", startSync)}
+                  onClick={() => void runSyncAction("sync", startSync)}
                 >
                   Sync official source
                 </button>
@@ -607,7 +680,10 @@ export function App() {
       <footer>
         <div>
           <strong>Pantry Hold</strong>
-          <span>Deterministic recall triage for a fictional demo pantry.</span>
+          <span>
+            One deterministic official-record demonstration proving the full
+            pipeline—not comprehensive recall coverage.
+          </span>
         </div>
         <p>{snapshot.disclaimer}</p>
       </footer>
