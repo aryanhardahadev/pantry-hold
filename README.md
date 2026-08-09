@@ -92,7 +92,7 @@ npm audit --omit=dev --audit-level=high
 
 ## AI disclosure
 
-OpenAI Codex assisted with research, product framing, code, tests, delivery configuration, and documentation. The human author selected the product, owns the implementation and deployment decisions, reviews generated work, and can explain the deterministic matching path. Material assistance is recorded in the project’s [AI usage disclosure log](./docs/tasks/winning-zerops-project/ai-usage.md).
+OpenAI Codex was used for research, implementation assistance, testing, debugging, and delivery configuration. The author directed the product scope and safety constraints and is responsible for the final decisions and deployment.
 
 ## Sources
 
@@ -105,13 +105,3 @@ OpenAI Codex assisted with research, product framing, code, tests, delivery conf
 - [Zerops PostgreSQL private connections](https://docs.zerops.io/postgresql/how-to/connect)
 - [Zerops pricing](https://docs.zerops.io/company/pricing)
 - [The Zerops Challenge rules](https://www.wemakedevs.org/hackathons/zerops/rules)
-
-## Submission checklist
-
-- Public source: [github.com/aryanhardahadev/pantry-hold](https://github.com/aryanhardahadev/pantry-hold)
-- Live app: [app-2b48-3000.prg1.zerops.app](https://app-2b48-3000.prg1.zerops.app/)
-- Demo video: `[add after recording]`
-- Public build post: `[add after publishing]`
-- Hackathon submission: `[complete after video and public build post]`
-
-No legal license has been selected for this repository. The repository contains no deployment credentials, and CI does not deploy.
