@@ -28,6 +28,14 @@ Thumbs.db
 .vscode/
 .codex/
 .agents/
+AGENTS.md
+
+# Private planning and submission working files
+docs/tasks/
+docs/demo-script.md
+docs/social-post-draft.md
+docs/submission-draft.md
+scripts/check-codex-usage.mjs
 
 # Research downloads and generated media
 artifacts/
